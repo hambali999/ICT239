@@ -1,0 +1,9 @@
+flask-wtf
+WTForms
+flask_bootstrap
+flask
+pymongo
+bcrypt
+Flask-Login
+flask-mongoengine
+mongoengine

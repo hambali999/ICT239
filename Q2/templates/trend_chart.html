@@ -1,0 +1,238 @@
+<html>
+<head>
+ 	<title>
+		 	Staycation Portal
+    </title> 
+     <script src="https://kit.fontawesome.com/8e00838b19.js" crossorigin="anonymous"></script>
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" ></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js" ></script>
+      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+     <link rel="stylesheet" type="text/css" media="screen" href="../static/style.css">
+</head>
+
+<body class="row">
+
+    {% if email == 'admin@abc.com' %}
+    <!-- SIDEBAR -->
+    <div class="d-flex flex-column flex-shrink-0 p-3 sidebarimg col-2" style="width: 220px;">
+        <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-light text-decoration-none">
+          <span class="bi me-3" width="10" height="20"></span>
+          <span class="">Staycation Portal</span>
+        </a>
+        <hr style="color: white;">
+        <ul class="nav nav-pills flex-column mb-auto ml-3">
+            <li class="nav-item" style="margin-left: 15px; color: white;">            
+                <img style="border-radius: 50%; " src="../static/admin.jpeg" width="30" height="20" alt="">
+                admin
+            </li>
+            <hr style="color: white;">
+
+          <li class="nav-item">            
+            <a href="{{ url_for('products') }}" class="nav-link link-light p-3 " aria-current="page">
+                <i class="fas fa-id-card p-1"></i>
+              Packages
+            </a>
+          </li>
+          <li>
+            <a href="{{ url_for('trend_chart') }}" class="nav-link link-light p-3">
+                <i class="fas fa-chart-area p-1"></i>
+              Dashboard
+            </a>
+          </li>
+          <li>
+            <a href="{{ url_for('upload') }}" class="nav-link link-light p-3">
+                <i class="fas fa-upload p-1"></i>
+              Upload
+            </a>
+          </li>
+        </ul>
+    </div>
+    {% else %}
+    <div class="d-flex flex-column flex-shrink-0 p-3 sidebarimg col-2" style="width: 220px; ">
+        <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-light text-decoration-none">
+          <span class="bi me-3" width="10" height="20"></span>
+          <span class="">Staycation Portal</span>
+        </a>
+        <hr style="color: white;">
+        <ul class="nav nav-pills flex-column mb-auto ml-3">
+            <li class="nav-item" style="margin-left: 15px; color: white;">            
+                <img style="border-radius: 50%; " src="../static/admin.jpeg" width="30" height="20" alt="">
+                {{name}}
+            </li>
+            <hr style="color: white;">
+
+          <li class="nav-item">            
+            <a href="#" class="nav-link link-light p-3 " aria-current="page">
+              <i class="fas fa-id-card p-1"></i>
+              Packages
+            </a>
+          </li>
+        </ul>
+    </div>
+    {% endif %}
+  <!-- END OF SIDEBAR -->
+
+  <!-- NAVBAR BLOCK -->
+  <div class="col pt-2">
+        <nav class="navbar navbar-light sidebarimg">
+          <div class="container-fluid">
+            
+            <span class="navbar-brand mb-0 h1 text-light">
+              PACKAGE CHART
+            </span>
+               <!-- onclik trigger modal -->
+              <a  class="nav-link link-dark " data-toggle="modal" data-target="#exampleModal">
+                <i class="fa fa-sign-out fa-lg"></i>
+              </a>
+          </div>
+        </nav>
+
+                <!-- CONTAINER FOR THE BOOKING -->
+        
+                <div class="container-fluid">
+                    <br>
+                    <div class="row">
+                      <div class="col-sm-8 pt-5 bootstrap-iso">
+                        <div class="card " style="width: auto;" >
+                            <h5 class="card-header">
+                                Package Incoming
+                            </h5>                  
+                            <div class="card-body ">
+                            <canvas id="myChart"></canvas>
+
+
+                            </div>
+                            <!-- <div class="chart-container">
+                                <h2>The Twitter Trending</h2>
+                                <canvas id="myChart"></canvas>
+                            </div> -->
+                        </div>
+                      </div>
+                    </div>
+        
+                <!-- END OF CONTAINER -->
+
+
+  </div>
+  <!-- END OF NAVBAR BLOCK -->
+
+  <!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Want to leave?</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Press logout to leave
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-success" data-dismiss="modal">Stay Here</button>
+        <a type="button" class="btn btn-danger" href="{{ url_for('logout') }}">Logout</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@next/dist/chart.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@next/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+<script>
+
+
+xydiscoveryPackageBookings = []
+{% for item in discoveryPackageBookingsTupleList %}
+  xydiscoveryPackageBookings.push({x: "{{item[0]}}", y: {{item[1]}}})
+{% endfor %}
+
+xystudioMBookings = []
+{% for item in studioMBookingsTupleList %}
+  xystudioMBookings.push({x: "{{item[0]}}", y: {{item[1]}}})
+{% endfor %}
+
+xyyorkHotelSingaporeBookings = []
+{% for item in yorkHotelSingaporeBookingsTupleList %}
+  xyyorkHotelSingaporeBookings.push({x: "{{item[0]}}", y: {{item[1]}}})
+{% endfor %}
+
+xywSingaporeSentosaCoveBookings = []
+{% for item in wSingaporeSentosaCoveBookingsTupleList %}
+  xywSingaporeSentosaCoveBookings.push({x: "{{item[0]}}", y: {{item[1]}}})
+{% endfor %}
+
+shangriLaSingaporeBookings = []
+{% for item in shangriLaSingaporeBookingsTupleList %}
+  shangriLaSingaporeBookings.push({x: "{{item[0]}}", y: {{item[1]}}})
+{% endfor %}
+
+xycapellaSingaporeBookings = []
+{% for item in capellaSingaporeBookingsTupleList %}
+  xycapellaSingaporeBookings.push({x: "{{item[0]}}", y: {{item[1]}}})
+{% endfor %}
+
+console.log(shangriLaSingaporeBookings)
+
+const labels = [
+  {% for item in labels %}
+  "{{ item }}",
+  {% endfor %}
+  ];
+
+
+  // var xyValues = [{x: '2022-02-08', y:120},  {x: '2022-02-09', y:360}, {x: '2022-02-14', y:120}, {x: '2022-03-02', y:120}, {x: '2022-03-09', y:360}, {x: '2022-03-14', y:120}]
+  //['2022-02-08', '2022-02-09', '2022-02-14', '2022-03-02', '2022-03-09', '2022-03-09']
+ //[120, 360, 120, 120, 360, 120]
+  const data = {
+    labels: labels,
+    datasets: [
+      {
+      label: 'Capella Singapore',
+      borderColor: 'green',
+      data: xycapellaSingaporeBookings
+      },
+      {
+      label: 'Discovery Package',
+      borderColor: 'skyblue',
+      data: xydiscoveryPackageBookings
+      },
+      {
+      label: 'Shangri-La Singapore',
+      borderColor: 'black',
+      data: shangriLaSingaporeBookings
+      },
+      {
+      label: 'Studio M',
+      borderColor: 'lightgreen',
+      data: xystudioMBookings
+      },
+      {
+      label: 'W Singapore - Sentosa Cove',
+      borderColor: 'darkblue',
+      data: xywSingaporeSentosaCoveBookings
+      },
+      {
+      label: 'York Hotel Singapore',
+      borderColor: 'purple',
+      data: xyyorkHotelSingaporeBookings
+      }
+    ]
+  };
+
+  const config = {
+    type: 'line',
+    data: data,
+    options: {}
+  };
+  
+  const myChart = new Chart(
+    document.getElementById('myChart'),
+    config
+  );
+
+</script>
+</body>
+</html>
+    
